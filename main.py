@@ -1,9 +1,25 @@
+# Directory structure:
+# telegram_bot/
+# ├── bot.py
+# ├── requirements.txt
+# ├── Dockerfile
+# ├── docker-compose.yml
+# └── data/
+
 # bot.py
 import logging
 import sqlite3
 from datetime import datetime
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes, ConversationHandler
+from telegram.ext import (
+    Application, 
+    CommandHandler, 
+    CallbackQueryHandler, 
+    MessageHandler,
+    ConversationHandler,
+    filters,
+    ContextTypes
+)
 import os
 import random
 
@@ -48,6 +64,8 @@ GROWTH_CHALLENGES = [
 
 class Database:
     def __init__(self):
+        # Ensure data directory exists
+        os.makedirs('data', exist_ok=True)
         self.conn = sqlite3.connect('data/challenges.db')
         self.create_tables()
 
@@ -191,7 +209,12 @@ async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 def main():
-    application = Application.builder().token(os.environ['TELEGRAM_TOKEN']).build()
+    token = os.getenv('TELEGRAM_TOKEN')
+    if not token:
+        logger.error("No TELEGRAM_TOKEN provided!")
+        return
+        
+    application = Application.builder().token(token).build()
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
@@ -205,7 +228,11 @@ def main():
     application.add_handler(conv_handler)
     application.add_handler(CommandHandler('stats', stats))
 
+    logger.info("Bot started!")
     application.run_polling()
 
 if __name__ == '__main__':
     main()
+
+
+
