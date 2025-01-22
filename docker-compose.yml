@@ -1,0 +1,10 @@
+# docker-compose.yml
+version: '3.8'
+services:
+  bot:
+    build: .
+    environment:
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+    volumes:
+      - ./data:/app/data
+    restart: always

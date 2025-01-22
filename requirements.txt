@@ -1,0 +1,3 @@
+# requirements.txt
+python-telegram-bot==20.7
+sqlite3-utils==3.35.0
