@@ -10,7 +10,7 @@ terraform {
   backend "s3" {
     bucket = "your-terraform-state-bucket"
     key    = "telegram-bot/terraform.tfstate"
-    region = "us-east-1"
+    region = "ap-southeast-1"
   }
 }
 
