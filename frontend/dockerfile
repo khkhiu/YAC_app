@@ -1,0 +1,18 @@
+# Use Node.js as the base image
+FROM node:18
+
+# Set the working directory
+WORKDIR /app
+
+# Install dependencies
+COPY package.json package-lock.json ./
+RUN npm install
+
+# Copy all source files
+COPY . .
+
+# Expose Metro bundler port
+EXPOSE 8081
+
+# Start the Metro bundler
+CMD ["npm", "start"]
