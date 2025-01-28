@@ -1,5 +1,6 @@
+// JournalScreen.tsx
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { DaySelector } from "./DaySelector";
 import { JournalCard } from "./JournalCard";
 import { NavigationBar } from "./NavigationBar";
@@ -30,48 +31,34 @@ const journalEntries = [
 
 export const JournalScreen: React.FC = () => {
   return (
-    <View className="relative mx-auto my-0 min-h-screen bg-white max-w-[375px] max-sm:w-full">
-      <View className="flex justify-between px-5 py-2.5">
-        <View className="font-semibold">
-          <Text>9:41</Text>
-        </View>
-        <View className="flex gap-2">
-          <View />
-          <View />
-        </View>
+    <View style={{ flex: 1, backgroundColor: 'white', maxWidth: 375, margin: 'auto' }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 10 }}>
+        <Text style={{ fontWeight: '600' }}>9:41</Text>
+        <View style={{ flexDirection: 'row', gap: 8 }} />
       </View>
-      <View className="bg-rose-50 min-h-[calc(100vh_-_40px)] rounded-[24px_24px_0_0]">
-        <View className="px-4 py-5 bg-rose-50">
-          <View className="flex justify-between items-center mb-5">
-            <View className="text-lg font-bold text-neutral-950">
-              <Text>Journal</Text>
-            </View>
-            <View className="flex gap-3 items-center">
-              <View className="flex p-1 bg-white border border-rose-400 border-solid rounded-[999px]">
-                <View className="px-4 py-1 text-sm cursor-pointer rounded-[999px] text-neutral-500">
-                  <Text>Day</Text>
+      <View style={{ flex: 1, backgroundColor: '#FFF1F2', borderTopLeftRadius: 24, borderTopRightRadius: 24 }}>
+        <View style={{ padding: 20, backgroundColor: '#FFF1F2' }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#171717' }}>Journal</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <View style={{ flexDirection: 'row', backgroundColor: 'white', borderWidth: 1, borderColor: '#FB7185', borderRadius: 999, padding: 4 }}>
+                <View style={{ paddingHorizontal: 16, paddingVertical: 4 }}>
+                  <Text style={{ fontSize: 14, color: '#6B7280' }}>Day</Text>
                 </View>
-                <View className="px-4 py-1 text-sm cursor-pointer rounded-[999px] text-neutral-500">
-                  <Text>Week</Text>
+                <View style={{ paddingHorizontal: 16, paddingVertical: 4 }}>
+                  <Text style={{ fontSize: 14, color: '#6B7280' }}>Week</Text>
                 </View>
-              </View>
-              <View className="flex justify-center items-center w-9 h-9 border border-rose-400 border-solid rounded-[999px]">
-                <View />
               </View>
             </View>
           </View>
           <DaySelector />
         </View>
-        <View className="p-4 bg-white">
+        <ScrollView style={{ backgroundColor: 'white', padding: 16 }}>
           {journalEntries.map((entry, index) => (
             <JournalCard key={index} {...entry} />
           ))}
-        </View>
-        <View className="flex fixed right-4 justify-center items-center w-14 h-14 text-white bg-rose-400 cursor-pointer bottom-[90px] rounded-[999px] shadow-[0_2px_8px_rgba(0,0,0,0.1)] max-sm:right-3">
-          <View />
-        </View>
+        </ScrollView>
         <NavigationBar />
-        <View className="mx-auto my-2 bg-neutral-950 h-[5px] rounded-[100px] w-[134px]" />
       </View>
     </View>
   );

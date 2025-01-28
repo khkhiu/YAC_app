@@ -1,3 +1,4 @@
+// NavigationBar.tsx
 import React from "react";
 import { View, Text } from "react-native";
 import { NavigationItemProps } from "./types";
@@ -12,20 +13,17 @@ const navigationItems: NavigationItemProps[] = [
 
 export const NavigationBar: React.FC = () => {
   return (
-    <View className="flex fixed bottom-0 justify-around px-0 py-4 w-full bg-white max-w-[375px]">
-      {navigationItems.map((item, index) => (
-        <View
-          key={index}
-          className="flex flex-col gap-1 items-center text-xs text-neutral-500"
-        >
-          {item.icon}
-          {item.label && (
-            <View>
-              <Text>{item.label}</Text>
-            </View>
-          )}
-        </View>
-      ))}
+    <View style={{ position: 'absolute', bottom: 0, width: '100%', maxWidth: 375, backgroundColor: 'white', paddingVertical: 16 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+        {navigationItems.map((item, index) => (
+          <View key={index} style={{ alignItems: 'center', gap: 4 }}>
+            {item.icon}
+            {item.label ? (
+              <Text style={{ fontSize: 12, color: '#6B7280' }}>{item.label}</Text>
+            ) : null}
+          </View>
+        ))}
+      </View>
     </View>
   );
 };
