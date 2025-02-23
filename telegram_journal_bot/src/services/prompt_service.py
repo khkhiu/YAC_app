@@ -34,10 +34,11 @@ class PromptService:
     def should_send_prompt(self, user: User, target_hour: int, target_day: int) -> bool:
         """Check if it's time to send a prompt to the user."""
         try:
-            user_tz = pytz.timezone(user.timezone)
-            current_time = datetime.now(user_tz)
+            # Always use Singapore timezone
+            sg_tz = pytz.timezone('Asia/Singapore')
+            current_time = datetime.now(sg_tz)
             return (
-                current_time.weekday() == target_day and
+                current_time.weekday() == target_day and 
                 current_time.hour == target_hour
             )
         except Exception as e:

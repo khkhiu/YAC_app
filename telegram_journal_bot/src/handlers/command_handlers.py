@@ -58,7 +58,8 @@ class CommandHandlers:
             "Commands:\n"
             "/prompt - Get a new reflection prompt\n"
             "/history - View your recent journal entries\n"
-            "/settz - Set your timezone\n\n"
+            "/timezone - Check prompt timings\n"
+            "/help - shows all available commands\n\n"
             "Let's start your journaling journey! Use /prompt to get your first question."
         )
         await update.message.reply_text(welcome_message)
@@ -114,60 +115,14 @@ class CommandHandlers:
 
     async def set_timezone(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """
-        Handle the /settz command.
+        Handle the /timezone command.
         
-        Sets the user's timezone for weekly prompts.
-        Example usage: /settz America/New_York
+        Informs users that timezone is fixed to Singapore time.
         """
-        if not update.effective_user:
-            logger.error("No effective user found in update")
-            return
-
-        user_id = str(update.effective_user.id)
-        user = self.storage.get_user(user_id)
-        
-        if not user:
-            await update.message.reply_text(
-                "Please start the bot with /start first!"
-            )
-            return
-
-        if not context.args:
-            await update.message.reply_text(
-                "Please provide your timezone. Example:\n"
-                "/settz America/New_York\n\n"
-                "You can find your timezone here:\n"
-                "https://en.wikipedia.org/wiki/List_of_tz_database_time_zones\n\n"
-                f"Your current timezone is: {user.timezone}"
-            )
-            return
-
-        timezone = context.args[0]
-        try:
-            # Validate timezone
-            pytz.timezone(timezone)
-            
-            # Update user's timezone
-            user.timezone = timezone
-            self.storage.add_user(user)
-            
-            current_time = datetime.now(pytz.timezone(timezone))
-            await update.message.reply_text(
-                f"✅ Your timezone has been set to {timezone}!\n"
-                f"Your current time should be: {current_time.strftime('%I:%M %p')}"
-            )
-            logger.info(f"Updated timezone for user {user_id} to {timezone}")
-            
-        except pytz.exceptions.UnknownTimeZoneError:
-            await update.message.reply_text(
-                "❌ Invalid timezone. Please check the timezone list and try again.\n"
-                "Example: /settz America/New_York"
-            )
-        except Exception as e:
-            logger.error(f"Error setting timezone for user {user_id}: {e}")
-            await update.message.reply_text(
-                "Sorry, there was an error setting your timezone. Please try again."
-            )
+        await update.message.reply_text(
+            "This bot operates on Singapore timezone (Asia/Singapore) for all users.\n"
+            "Weekly prompts will be sent according to Singapore time."
+        )
 
     async def help(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """
@@ -180,13 +135,11 @@ class CommandHandlers:
             "• /start - Initialize the bot and get started\n"
             "• /prompt - Get a new reflection prompt\n"
             "• /history - View your recent journal entries\n"
-            "• /settz - Set your timezone (e.g., /settz America/New_York)\n"
             "• /help - Show this help message\n\n"
             "📝 How to use:\n"
             "1. Use /start to begin\n"
-            "2. Set your timezone with /settz\n"
-            "3. Get prompts with /prompt\n"
-            "4. View your entries with /history\n\n"
+            "2. Get prompts with /prompt\n"
+            "3. View your entries with /history\n\n"
             "✨ The bot will also send you weekly prompts "
             "every Monday at 9 AM in your timezone."
         )

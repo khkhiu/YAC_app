@@ -55,6 +55,5 @@ COMMAND_DESCRIPTIONS = {
     "start": "Initialize the bot and get started",
     "prompt": "Get a new reflection prompt",
     "history": "View your recent journal entries",
-    "settz": "Set your timezone (e.g., /settz America/New_York)",
     "help": "Show available commands and usage",
 }

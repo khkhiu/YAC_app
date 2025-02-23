@@ -76,7 +76,8 @@ class JournalBot:
         application.add_handler(conv_handler)
         application.add_handler(CommandHandler('start', self.command_handlers.start))
         application.add_handler(CommandHandler('history', self.command_handlers.view_history))
-        application.add_handler(CommandHandler('settz', self.command_handlers.set_timezone))
+        application.add_handler(CommandHandler('timezone', self.command_handlers.set_timezone))
+        application.add_handler(CommandHandler('help', self.command_handlers.help))
 
     def run(self):
         """Run the bot."""

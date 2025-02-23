@@ -3,6 +3,7 @@
 from dataclasses import dataclass, asdict
 from typing import List, Optional, Dict
 from datetime import datetime
+from src.config import SINGAPORE_TIMEZONE
 
 @dataclass
 class JournalEntry:
@@ -30,25 +31,27 @@ class JournalEntry:
 class User:
     """Represents a user of the journal bot."""
     id: str
-    timezone: str = 'UTC'
+    timezone: str = SINGAPORE_TIMEZONE  # Always initialized with Singapore timezone
     last_prompt: Optional[Dict] = None
     responses: List[JournalEntry] = None
 
     def __post_init__(self):
-        """Initialize empty responses list if None."""
+        """Initialize empty responses list if None and ensure Singapore timezone."""
         if self.responses is None:
             self.responses = []
+        # Always ensure Singapore timezone
+        self.timezone = SINGAPORE_TIMEZONE
 
     @classmethod
     def from_dict(cls, user_id: str, data: Dict) -> 'User':
         """Create a User instance from a dictionary."""
         responses = [
-            JournalEntry.from_dict(entry)
+            JournalEntry.from_dict(entry) 
             for entry in data.get('responses', [])
         ]
         return cls(
             id=user_id,
-            timezone=data.get('timezone', 'UTC'),
+            timezone=SINGAPORE_TIMEZONE,  # Always use Singapore timezone
             last_prompt=data.get('last_prompt'),
             responses=responses
         )
@@ -56,7 +59,7 @@ class User:
     def to_dict(self) -> Dict:
         """Convert the user to a dictionary."""
         return {
-            'timezone': self.timezone,
+            'timezone': SINGAPORE_TIMEZONE,  # Always save Singapore timezone
             'last_prompt': self.last_prompt,
             'responses': [entry.to_dict() for entry in self.responses]
         }
