@@ -30,6 +30,17 @@ DEFAULT_TIMEZONE = "UTC"
 WEEKLY_PROMPT_DAY = 0  # Monday
 WEEKLY_PROMPT_HOUR = 9  # 9 AM
 
+# Days of the week
+DAYS_OF_WEEK = {
+    0: "Monday",
+    1: "Tuesday",
+    2: "Wednesday",
+    3: "Thursday",
+    4: "Friday",
+    5: "Saturday",
+    6: "Sunday"
+}
+
 # Storage constants
 DEFAULT_USERS_FILE = "data/users.json"
 DEFAULT_MAX_HISTORY = 5
@@ -41,6 +52,7 @@ ERROR_MESSAGES = {
     "general_error": "Sorry, something went wrong. Please try again later.",
     "no_history": "You haven't made any journal entries yet. Use /prompt to start!",
     "save_error": "Error saving your response. Please try again.",
+    "preference_error": "Error updating your preferences. Please try again."
 }
 
 # Success messages
@@ -48,6 +60,8 @@ SUCCESS_MESSAGES = {
     "response_saved": "✨ Thank you for sharing! Your response has been saved.",
     "timezone_set": "✅ Your timezone has been set to {}!",
     "prompt_sent": "🤔 Here's your reflection prompt:",
+    "day_set": "✅ Your prompt day has been set to {}!",
+    "time_set": "✅ Your prompt time has been set to {} {}!"
 }
 
 # Command descriptions
@@ -56,4 +70,7 @@ COMMAND_DESCRIPTIONS = {
     "prompt": "Get a new reflection prompt",
     "history": "View your recent journal entries",
     "help": "Show available commands and usage",
+    "set_day": "Set your preferred day for weekly prompts",
+    "set_time": "Set your preferred time for prompts",
+    "settings": "View your current prompt settings"
 }

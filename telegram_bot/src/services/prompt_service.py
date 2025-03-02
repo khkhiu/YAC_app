@@ -90,15 +90,24 @@ class PromptService:
             prompt_type=prompt_type
         )
 
-    def should_send_prompt(self, user: User, target_hour: int, target_day: int) -> bool:
-        """Check if it's time to send a prompt to the user."""
+    def should_send_prompt(self, user: User) -> bool:
+        """
+        Check if it's time to send a prompt to the user based on their preferences.
+        
+        Args:
+            user: The user to check
+            
+        Returns:
+            bool: True if it's time to send a prompt, False otherwise
+        """
         try:
             # Always use Singapore timezone
             sg_tz = pytz.timezone('Asia/Singapore')
             current_time = datetime.now(sg_tz)
+            
             return (
-                current_time.weekday() == target_day and 
-                current_time.hour == target_hour
+                current_time.weekday() == user.preferred_prompt_day and 
+                current_time.hour == user.preferred_prompt_hour
             )
         except Exception as e:
             logger.error(f"Error checking prompt time for user {user.id}: {e}")

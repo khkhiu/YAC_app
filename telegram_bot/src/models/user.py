@@ -34,6 +34,8 @@ class User:
     timezone: str = SINGAPORE_TIMEZONE  # Always initialized with Singapore timezone
     last_prompt: Optional[Dict] = None
     responses: List[JournalEntry] = None
+    preferred_prompt_day: int = 0  # Default is Monday (0)
+    preferred_prompt_hour: int = 9  # Default is 9 AM
 
     def __post_init__(self):
         """Initialize empty responses list if None and ensure Singapore timezone."""
@@ -53,7 +55,9 @@ class User:
             id=user_id,
             timezone=SINGAPORE_TIMEZONE,  # Always use Singapore timezone
             last_prompt=data.get('last_prompt'),
-            responses=responses
+            responses=responses,
+            preferred_prompt_day=data.get('preferred_prompt_day', 0),
+            preferred_prompt_hour=data.get('preferred_prompt_hour', 9)
         )
 
     def to_dict(self) -> Dict:
@@ -61,7 +65,9 @@ class User:
         return {
             'timezone': SINGAPORE_TIMEZONE,  # Always save Singapore timezone
             'last_prompt': self.last_prompt,
-            'responses': [entry.to_dict() for entry in self.responses]
+            'responses': [entry.to_dict() for entry in self.responses],
+            'preferred_prompt_day': self.preferred_prompt_day,
+            'preferred_prompt_hour': self.preferred_prompt_hour
         }
 
     def add_response(self, entry: JournalEntry):
