@@ -32,9 +32,10 @@ class ConversationHandlers:
                 )
                 return ConversationHandler.END
 
-            # Get random prompt
-            prompt, prompt_type = self.prompt_service.get_random_prompt()
-
+            # Get the next prompt for this user based on their prompt count
+            # (self-awareness for odd counts, connections for even counts)
+            prompt, prompt_type = self.prompt_service.get_next_prompt_for_user(user_id)
+            
             # Store current prompt
             user.last_prompt = {
                 'text': prompt,
@@ -42,11 +43,17 @@ class ConversationHandlers:
                 'timestamp': datetime.now().isoformat()
             }
             self.storage.add_user(user)
+            
+            # Indicate the category to the user
+            category_emoji = "🧠" if prompt_type == "self_awareness" else "🤝"
+            category_name = "Self-Awareness" if prompt_type == "self_awareness" else "Connections"
 
             await update.message.reply_text(
-                f"🤔 Here's your reflection prompt:\n\n{prompt}\n\n"
+                f"{category_emoji} {category_name} Reflection:\n\n{prompt}\n\n"
                 "Take your time to reflect and respond when you're ready. "
-                "Your response will be saved in your journal."
+                "Your response will be saved in your journal.\n\n"
+                "You can use other commands like /history while thinking - "
+                "just reply directly to this message when you're ready."
             )
             return RESPONDING
 
@@ -78,11 +85,21 @@ class ConversationHandlers:
             user.add_response(entry)
             self.storage.add_user(user)
 
-            await update.message.reply_text(
-                "✨ Thank you for sharing! Your response has been saved.\n\n"
-                "Remember, regular reflection helps us grow and understand ourselves better.\n"
-                "Use /prompt when you're ready for another question."
-            )
+            # Give feedback based on the prompt type
+            if user.last_prompt['type'] == 'self_awareness':
+                feedback = (
+                    "✨ Thank you for your thoughtful reflection! Your response has been saved.\n\n"
+                    "Self-awareness is a journey that takes time and patience.\n"
+                    "Use /prompt when you're ready for another question."
+                )
+            else:
+                feedback = (
+                    "✨ Thank you for sharing! Your response has been saved.\n\n"
+                    "Building meaningful connections with others often starts with understanding ourselves.\n"
+                    "Use /prompt when you're ready for another question."
+                )
+                
+            await update.message.reply_text(feedback)
 
         except Exception as e:
             logger.error(f"Error saving response: {e}")
