@@ -35,6 +35,3 @@ ENV/
 
 # Logs
 *.log
-
-# Node_modules
-node_modules/
