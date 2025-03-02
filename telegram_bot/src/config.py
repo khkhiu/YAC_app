@@ -31,7 +31,7 @@ class Config:
         return cls(
             bot_token=bot_token,
             users_file=os.getenv('USERS_FILE', 'data/users.json'),
-            check_interval=int(os.getenv('CHECK_INTERVAL', '3600')),
+            check_interval=int(os.getenv('CHECK_INTERVAL', '60')),
             prompt_hour=int(os.getenv('PROMPT_HOUR', '9')),
             prompt_day=int(os.getenv('PROMPT_DAY', '0')),  # Monday
             max_history=int(os.getenv('MAX_HISTORY', '5')),

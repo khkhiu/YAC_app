@@ -56,7 +56,7 @@ class JournalBot:
             logger.info(f"Running prompt check job at SG time: day={current_day}, hour={current_hour}")
             
             # Get all users
-            users = self.storage.get_all_users()
+            users = self.storage_service.get_all_users()  # Fixed variable name
             prompts_sent = 0
             
             for user in users.values():
@@ -66,6 +66,14 @@ class JournalBot:
                         # Get the appropriate prompt for this user based on their count
                         prompt, prompt_type = self.prompt_service.get_next_prompt_for_user(user.id)
                         
+                        # Save this prompt as the user's last prompt so they can respond to it
+                        user.last_prompt = {
+                            'text': prompt,
+                            'type': prompt_type,
+                            'timestamp': datetime.now().isoformat()
+                        }
+                        self.storage_service.add_user(user)  # Fixed variable name
+                        
                         # Indicate the category to the user
                         category_emoji = "🧠" if prompt_type == "self_awareness" else "🤝"
                         category_name = "Self-Awareness" if prompt_type == "self_awareness" else "Connections"
@@ -73,7 +81,7 @@ class JournalBot:
                         await context.bot.send_message(
                             chat_id=user.id,
                             text=f"🌟 Weekly Reflection Time! {category_emoji} {category_name}\n\n{prompt}\n\n"
-                            "Take a moment to pause and reflect on this question."
+                            "Take a moment to pause and reflect on this question. Simply reply to this message with your thoughts."
                         )
                         logger.info(f"Sent {prompt_type} prompt to user {user.id}")
                         prompts_sent += 1
@@ -123,6 +131,15 @@ class JournalBot:
         # Add callback query handler for inline keyboards
         application.add_handler(CallbackQueryHandler(self.command_handlers.handle_callback))
         
+        # Add a general message handler to capture responses to scheduled prompts
+        # This needs to be added AFTER the ConversationHandler to avoid conflicts
+        application.add_handler(
+            MessageHandler(
+                filters.TEXT & ~filters.COMMAND,
+                self.conversation_handlers.handle_direct_response
+            )
+        )
+        
         # Add error handler
         application.add_error_handler(self.command_handlers.handle_error)
 
@@ -141,14 +158,14 @@ class JournalBot:
             # Setup a job that checks more frequently to handle user-specific times
             job_queue = application.job_queue
             
-            # Run job every hour to check if it's time to send prompts to any users
+            # Run job every 10 mins to check if it's time to send prompts to any users
             job_queue.run_repeating(
                 self.weekly_prompt_job,
-                interval=3600,  # Check every hour
+                interval=60,  # Check every 10 mins
                 first=1  # Start 1 second after bot startup
             )
             
-            logger.info(f"Scheduled prompt check job every hour")
+            logger.info(f"Scheduled prompt check job every 10 mins")
 
             # Start polling
             logger.info("Starting bot...")
