@@ -1,0 +1,32 @@
+#version: '3.8'
+
+services:
+  # Node.js web server
+  web:
+    build:
+      context: ./nodeJS
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - BOT_SERVICE_URL=http://bot:5000
+    depends_on:
+      - bot
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+
+  # Python Telegram bot service
+  bot:
+    build:
+      context: ./telegram_bot
+      dockerfile: Dockerfile
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./telegram_bot/data:/app/data
+      - ./telegram_bot/.env:/app/.env
+    restart: unless-stopped
+
+volumes:
+  data:

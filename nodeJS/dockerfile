@@ -1,0 +1,22 @@
+FROM node:18-slim
+
+# Create app directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install Node.js dependencies
+RUN npm ci --only=production
+
+# Copy the server files
+COPY server.js ./
+
+# Create logs directory
+RUN mkdir -p logs
+
+# Expose the port
+EXPOSE 3000
+
+# Start the Node.js server
+CMD ["node", "server.js"]
