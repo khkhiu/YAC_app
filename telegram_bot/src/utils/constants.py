@@ -72,5 +72,6 @@ COMMAND_DESCRIPTIONS = {
     "help": "Show available commands and usage",
     "set_day": "Set your preferred day for weekly prompts",
     "set_time": "Set your preferred time for prompts",
-    "settings": "View your current prompt settings"
+    "settings": "View your current prompt settings",
+    "ai_assist": "Get a dinosaur-themed friendship message"
 }

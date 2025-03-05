@@ -13,6 +13,7 @@ from src.services.storage_service import StorageService
 from src.services.prompt_service import PromptService
 from src.handlers.command_handlers import CommandHandlers
 from src.handlers.conversation_handlers import ConversationHandlers, RESPONDING
+from src.handlers.ai_assist import send_ai_assist
 from src.utils.logger import get_logger
 from src.utils.constants import DAYS_OF_WEEK
 import pytz
@@ -156,7 +157,8 @@ class JournalBot:
                 CommandHandler('history', self.command_handlers.view_history),
                 CommandHandler('timezone', self.command_handlers.set_timezone),
                 CommandHandler('help', self.command_handlers.help),
-                CommandHandler('prompt', self.conversation_handlers.send_prompt)
+                CommandHandler('prompt', self.conversation_handlers.send_prompt),
+                CommandHandler('ai_assist', send_ai_assist)
             ],
         )
 
@@ -172,6 +174,7 @@ class JournalBot:
         application.add_handler(CommandHandler('set_time', self.command_handlers.set_time))
         application.add_handler(CommandHandler('settings', self.command_handlers.settings))
         
+        application.add_handler(CommandHandler('ai_assist', send_ai_assist))
         # Add callback query handler for inline keyboards
         application.add_handler(CallbackQueryHandler(self.command_handlers.handle_callback))
         

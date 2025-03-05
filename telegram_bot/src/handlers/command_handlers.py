@@ -69,6 +69,7 @@ class CommandHandlers:
             "/set_day - Set your preferred day for prompts\n"
             "/set_time - Set your preferred time for prompts\n"
             "/settings - View your current prompt settings\n"
+            "/ai_assist - Get a motivational friendship message\n"
             "/help - shows all available commands\n\n"
             "Let's start your journaling journey! Use /prompt to get your first question."
         )
@@ -152,6 +153,7 @@ class CommandHandlers:
             "• /set_day - Set your preferred day for weekly prompts\n"
             "• /set_time - Set your preferred hour for prompts\n"
             "• /settings - View your current prompt settings\n"
+            "• /ai_assist - Get a dinosaur-themed assistance on prompts\n"
             "• /help - Show this help message\n\n"
             "📝 How to use:\n"
             "1. Use /start to begin\n"
