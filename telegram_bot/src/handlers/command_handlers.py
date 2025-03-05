@@ -4,24 +4,14 @@ from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import ContextTypes
 import pytz
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Callable
 from src.models.user import User
 from src.services.storage_service import StorageService
 from src.services.prompt_service import PromptService
 from src.utils.logger import get_logger
+from src.utils.constants import DAYS_OF_WEEK
 
 logger = get_logger(__name__)
-
-# Constants for day selection
-DAYS_OF_WEEK = {
-    0: "Monday",
-    1: "Tuesday",
-    2: "Wednesday",
-    3: "Thursday",
-    4: "Friday",
-    5: "Saturday",
-    6: "Sunday"
-}
 
 class CommandHandlers:
     """Handlers for bot commands."""
@@ -30,7 +20,8 @@ class CommandHandlers:
         self,
         storage_service: StorageService,
         prompt_service: PromptService,
-        max_history: int
+        max_history: int,
+        schedule_callback: Optional[Callable] = None
     ):
         """
         Initialize command handlers with required services.
@@ -39,10 +30,12 @@ class CommandHandlers:
             storage_service: Service for managing user data
             prompt_service: Service for managing prompts
             max_history: Maximum number of history entries to show
+            schedule_callback: Optional callback to reschedule prompts when settings change
         """
         self.storage = storage_service
         self.prompt_service = prompt_service
         self.max_history = max_history
+        self.schedule_callback = schedule_callback  # Callback for rescheduling prompts
 
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """
@@ -55,17 +48,20 @@ class CommandHandlers:
             return
 
         user_id = str(update.effective_user.id)
+        new_user = False
         
         if not self.storage.get_user(user_id):
             user = User(id=user_id)
             self.storage.add_user(user)
             logger.info(f"Created new user with ID: {user_id}")
+            new_user = True
 
         welcome_message = (
-            "Welcome to your personal journaling companion! 🌟\n\n"
-            "I'll send you weekly prompts to help you reflect on:\n"
-            "• Self-awareness 🤔\n"
-            "• Building meaningful connections 🤝\n\n"
+            "🦕 Welcome to ThyKnow! 🦖\n\n"
+            "Just like dinos ruled the Earth, you’re about to rule self-awareness & connections! 🌍💡\n\n"
+            "I’ll send you weekly prompts to help you reflect on:\n"
+            "• Self-awareness 🤔(Because knowing yourself is a Jurassic-level skill!)\n"
+            "• Building meaningful connections 🤝 (Because even T-Rex needed a buddy!)\n\n"
             "Commands:\n"
             "/prompt - Get a new reflection prompt\n"
             "/history - View your recent journal entries\n"
@@ -77,6 +73,10 @@ class CommandHandlers:
             "Let's start your journaling journey! Use /prompt to get your first question."
         )
         await update.message.reply_text(welcome_message)
+        
+        # Schedule prompts for new users
+        if new_user and self.schedule_callback:
+            self.schedule_callback(context.application, user_id)
 
     async def view_history(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """
@@ -111,7 +111,7 @@ class CommandHandlers:
                 date = datetime.fromisoformat(entry.timestamp).strftime('%Y-%m-%d %H:%M')
                 history_text += f"📅 {date}\n"
                 history_text += f"Q: {entry.prompt}\n"
-                history_text += f"A: {entry.response}\n\n"
+                history_text += f"\nA: {entry.response}\n\n"
 
             # Split message if it's too long
             if len(history_text) > 4000:
@@ -276,13 +276,16 @@ class CommandHandlers:
             return
             
         callback_data = query.data
+        settings_changed = False
         
         # Handle day selection
         if callback_data.startswith("day_"):
             try:
                 day = int(callback_data.split("_")[1])
-                user.preferred_prompt_day = day
-                self.storage.add_user(user)
+                if user.preferred_prompt_day != day:
+                    user.preferred_prompt_day = day
+                    self.storage.add_user(user)
+                    settings_changed = True
                 
                 day_name = DAYS_OF_WEEK[day]
                 await query.message.edit_text(f"✅ Your prompt day has been set to {day_name}!")
@@ -296,8 +299,10 @@ class CommandHandlers:
         elif callback_data.startswith("hour_"):
             try:
                 hour = int(callback_data.split("_")[1])
-                user.preferred_prompt_hour = hour
-                self.storage.add_user(user)
+                if user.preferred_prompt_hour != hour:
+                    user.preferred_prompt_hour = hour
+                    self.storage.add_user(user)
+                    settings_changed = True
                 
                 # Format for 12-hour display
                 hour_12 = hour % 12
@@ -311,6 +316,11 @@ class CommandHandlers:
             except Exception as e:
                 logger.error(f"Error setting time preference: {e}")
                 await query.message.edit_text("Sorry, there was an error setting your preference.")
+        
+        # Reschedule prompts if settings were changed
+        if settings_changed and self.schedule_callback:
+            self.schedule_callback(context.application, user_id)
+            logger.info(f"Rescheduled prompts for user {user_id} after settings change")
 
     async def handle_error(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """

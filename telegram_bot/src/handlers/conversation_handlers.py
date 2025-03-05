@@ -49,9 +49,8 @@ class ConversationHandlers:
             category_name = "Self-Awareness" if prompt_type == "self_awareness" else "Connections"
 
             await update.message.reply_text(
-                f"{category_emoji} {category_name} Reflection:\n\n{prompt}\n\n"
-                "Take your time to reflect and respond when you're ready. "
-                "Your response will be saved in your journal.\n\n"
+                f"{category_emoji} {category_name} Dig Site! \n\n{prompt}\n\n"
+                "Take your time to excavate your thoughts—your reflections will be saved in your journal! 🦴✨\n\n"
                 "You can use other commands like /history while thinking - "
                 "just reply directly to this message when you're ready."
             )
@@ -93,13 +92,13 @@ class ConversationHandlers:
             # Give feedback based on the prompt type
             if entry.prompt_type == 'self_awareness':
                 feedback = (
-                    "✨ Thank you for your thoughtful reflection! Your response has been saved.\n\n"
-                    "Self-awareness is a journey that takes time and patience.\n"
-                    "Use /prompt when you're ready for another question."
+                    "✨ Dino-mite! Your response has been safely tucked away in your journal.🦖 \n\n"
+                    "Just like a pack of raptors, strong connections start with understanding ourselves!\n"
+                    #"Use /prompt when you're ready for another question."
                 )
             else:
                 feedback = (
-                    "✨ Thank you for sharing! Your response has been saved.\n\n"
+                    "✨ Dino-mite! Your response has been safely tucked away in your journal.🦖\n\n"
                     "Building meaningful connections with others often starts with understanding ourselves.\n"
                     "Use /prompt when you're ready for another question."
                 )
